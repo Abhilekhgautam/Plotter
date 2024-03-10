@@ -62,7 +62,7 @@ public:
     }
   }
   // kinda stupid..
-  std::vector<int> getRangeVals() { return vals; }
+  const std::vector<int> &getRangeVals() { return vals; }
 };
 
 // Plot.Plot(range(1,10,1), 2x + 3)
