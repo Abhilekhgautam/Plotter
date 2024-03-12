@@ -140,13 +140,17 @@ private:
 public:
   Plot() { sAppName = "Plot C++"; }
   // inititalization goes here
-  bool OnUserCreate() override { return true; }
+  bool OnUserCreate() override {	 
+      SetPoints(Range(1, 390, 1), Function("5x"));
+       return true;
+  }
+
   // this fn is called for every frame..
   bool OnUserUpdate(float fElpasedTime) override {
     Clear(olc::WHITE);
     DrawAxes();
-    if (coordinates.size() == 0)
-      SetPoints(Range(1, 390, 1), Function("x * x * x * x"));
+//    if (coordinates.size() == 0)
+     // SetPoints(Range(1, 390, 1), Function("x * x * x * x"));
     PlotPoints();
     return true;
   }
