@@ -1,43 +1,110 @@
+
+#include <string>
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-#include <cctype>
-#include <utility>
 
+#include <iostream>
+#include <cctype>
+#include <vector>
+#include <utility>
+#include <functional>
 // todo: design a proper structure..
 // single variable function
+ 
 class Function {
 private:
-  std::string function;
+  std::function<double(int)> m_function;
+  char m_variable;
 
+  std::vector<std::string> m_params;
+  
 public:
   // no mechanism to confirm a single variable
-  Function(std::string str) { function = str; }
-  double Evaluate(int input) {
-    int temp = 1;
-    // assume multiplication by default.
-    char current_operator = '*';
-    double result = 1;
-    for (char elt : function) {
-      if (isspace(elt)) {
-      } else if (isdigit(elt)) {
-        result = perform_operation(int(elt) - 48, result, current_operator);
-      } else if (elt == '+') {
-        current_operator = '+';
-      } else if (elt == '-') {
-        current_operator = '-';
-      } else if (elt == '/') {
-        current_operator = '/';
-      } else if (elt == '*') {
-        current_operator = '*';
-      } else if (isalpha(elt)) {
-        result =
-            perform_operation(perform_operation(temp, input, current_operator),
-                              result, current_operator);
-      }
-    }
-    return result;
+  Function(char* str) { 
+       assign_lamdda(str);
   }
 
+  void assign_lamdda(char* str){
+    char* current = str;
+    char* next = str;
+
+    while(*current != '\0'){
+      if(isspace(*current)){
+        next++;
+	current++;
+      } else if(isdigit(*current)){
+	   int num = int(*current) - 48;
+	  while(isdigit(*(++next))){
+	    num = num * 10 + (*next - 48); 
+	    current++;
+	  }
+	  current = next;
+	  m_params.emplace_back(std::to_string(num));
+      } else if (isalpha(*current)){
+	 // for future to check if its a single var or not
+	 m_variable = *current;
+	 //std::string temp(m_variable);
+	 m_params.emplace_back("x");
+	 current++;
+	 next++;
+      } else if ((*current) == '+'){
+	  m_params.emplace_back("+");
+	  current++;
+	  next++;
+      } else if((*current) == '-'){
+	 m_params.emplace_back("-");
+	 current++;
+	 next++;
+      } else if((*current) == '*'){
+	 m_params.emplace_back("*");
+	 current++;
+	 next++;
+      } else if((*current) == '/'){
+	 m_params.emplace_back("/");
+	 current++;
+	 next++;
+      }
+
+    }
+       m_function = [&](int x)-> double{
+	    double result = 0;
+	    char current_op = '*';
+	    bool no_op_read = true;
+	   for(const auto& elt : m_params){
+		if(isdigit(elt[0])){
+		  if(no_op_read)
+		    result =  std::stoi(elt);	
+		  else{
+		   result = perform_operation(result, std::stoi(elt), current_op);	  
+		  }
+		} else if (elt == "+") {
+                      current_op = '+';
+		      no_op_read = false;
+                } else if (elt == "-") {
+		      no_op_read = false;
+                      current_op = '-';
+                } else if (elt == "/") {
+		       no_op_read = false;
+                       current_op = '/';
+                } else if (elt == "*") {
+			no_op_read = false;
+                       current_op = '*';
+                } else if (isalpha(elt[0])) {
+	              if(no_op_read) result = 1;
+                      result = perform_operation(result, x, current_op);
+                }
+	   }
+	   return result;
+      };
+  }
+
+  double Evaluate(int input) {
+    return m_function(input);	  
+  }
+
+  void debug(){
+    for(const auto& elt: m_params) std::cout << elt << '\n';	  
+  }
   double perform_operation(const double &a, const double &b, const char op) {
     if (op == '+')
       return a + b;
@@ -66,7 +133,6 @@ public:
 };
 
 // Plot.Plot(range(1,10,1), 2x + 3)
-
 class Plot : public olc::PixelGameEngine {
 private:
   std::vector<std::pair<double, double>> coordinates;
@@ -80,7 +146,7 @@ public:
     Clear(olc::WHITE);
     DrawAxes();
     if (coordinates.size() == 0)
-      SetPoints(Range(1, 390, 1), Function("2x + 30"));
+      SetPoints(Range(1, 390, 1), Function("x * x * x * x"));
     PlotPoints();
     return true;
   }
@@ -105,9 +171,9 @@ public:
     }
   }
 };
-
 int main() {
-  Plot myPlot;
+  
+ Plot myPlot;
   if (myPlot.Construct(400, 400, 4, 4)) {
     myPlot.Start();
   }
