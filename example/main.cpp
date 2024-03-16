@@ -1,4 +1,3 @@
-#include "../function.h"
 #include "../plotter.h"
 
 int main() {
