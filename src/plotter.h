@@ -36,7 +36,7 @@ public:
 
   void SetPoints(Range r, Function f) {
     // kinda not what I like
-    for (int elt : r.getRangeVals()) {
+    for (int elt : r.GetValues()) {
       coordinates.emplace_back(std::make_pair(elt, f.Evaluate(elt)));
     }
   }
