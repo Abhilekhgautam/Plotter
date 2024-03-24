@@ -4,16 +4,23 @@
 // I am absolutely aware of c++ 20 Ranges..
 class Range {
 private:
-  std::vector<int> vals;
-
+  int m_start;
+  int m_end;
+  int m_increment;
 public:
   Range() = default;
   Range(int start, int end, int increment) {
-    for (int i = start; i < end; i = i + increment) {
-      vals.emplace_back(i);
-    }
+    m_start = start;
+    m_end = end;
+    m_increment = increment;
   }
-  // kinda stupid..
-  const std::vector<int> &getRangeVals() { return vals; }
+
+  std::vector<int> GetValues(){
+    std::vector<int> temps;
+    for(int i = m_start; i < m_end ; i = i + m_increment){
+	temps.emplace_back(i);    
+    }
+    return temps;
+  }
 };
 
