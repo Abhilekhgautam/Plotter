@@ -1,4 +1,4 @@
-#include "../plotter.h"
+#include "../src/plotter.h"
 
 int main() {
   // define a new function.
@@ -8,7 +8,7 @@ int main() {
   // create a plot object with range and the function
   Plot myPlot(r,f);
   // call the plot function to plot
-  myPlot.plot();
+   myPlot.plot();
   return 0;
 }
 
